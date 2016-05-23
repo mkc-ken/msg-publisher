@@ -3,6 +3,7 @@
 import logger from '../utils/logger'
 import { ValidationError } from '../utils/errors'
 import deliverer_factory from '../deliverer_factory'
+import CATEGORIES from '../categories'
 
 const log = logger.child({module: 'miscController'})
 const deliverer = deliverer_factory({ impl: {} })
@@ -12,9 +13,8 @@ export default {
     router.post('/misc', (req, res) => {
       log.debug('new miscellaneous message delivery requested')
 
-      let msg = {}
       // TBD validation should be extracted out of fm_selector since it's the controller's job
-      deliverer.broadcast(msg).then(
+      deliverer.queue(CATEGORIES.MISC, req).then(
         (receipt) => {
           log.debug({ receipt: receipt }, 'miscellaneous message delivered')
           res.json(receipt)

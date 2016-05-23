@@ -3,6 +3,7 @@
 import logger from '../utils/logger'
 import { ValidationError } from '../utils/errors'
 import deliverer_factory from '../deliverer_factory'
+import CATEGORIES from '../categories'
 
 const log = logger.child({module: 'commentController'})
 const deliverer = deliverer_factory({ impl: {} })
@@ -12,9 +13,8 @@ export default {
     router.post('/comments', (req, res) => {
       log.debug('new comment message delivery requested')
 
-      let msg = {}
       // TBD validation should be extracted out of fm_selector since it's the controller's job
-      deliverer.broadcast(msg).then(
+      deliverer.queue(CATEGORIES.COMMENT, req).then(
         (receipt) => {
           log.debug({ receipt: receipt }, 'comment message delivered')
           res.json(receipt)
