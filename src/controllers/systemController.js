@@ -3,10 +3,11 @@
 import logger from '../utils/logger'
 import { ValidationError } from '../utils/errors'
 import deliverer_factory from '../deliverer_factory'
+import amqp_deliverer from '../implementations/amqp_deliverer'
 import CATEGORIES from '../categories'
 
 const log = logger.child({module: 'systemController'})
-const deliverer = deliverer_factory({ impl: {} })
+const deliverer = deliverer_factory({ impl: amqp_deliverer })
 
 export default {
   init: (router) => {
@@ -14,7 +15,7 @@ export default {
       log.debug('new system message delivery requested')
 
       // TBD validation should be extracted out of fm_selector since it's the controller's job
-      deliverer.queue(CATEGORIES.SYSTEM, req).then(
+      deliverer.queue(CATEGORIES.SYSTEM, req.body).then(
         (receipt) => {
           log.debug({ receipt: receipt }, 'system message delivered')
           res.json(receipt)

@@ -30,6 +30,7 @@ export default {
   debug: debug,
   applicationName: "msg-publisher",
   port: port,
+  amqp_namespace: "mkm",
   storage: {
     rabbit: {
       host: rabbit_ip,
