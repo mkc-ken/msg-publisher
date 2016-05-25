@@ -24,6 +24,7 @@ amqpConn.catch((err) => {
     amqpConn.then((conn) => {
       conn.close()
       log.debug('amqp disconnected')
+      process.exit(0)
     })
   })
 })
@@ -31,24 +32,25 @@ amqpConn.catch((err) => {
 export default {
   send: (user_id, category, msg) => {
     const privateRoutingKey = rkeyPrivate + user_id
-    let openedCh
     const amqpOk = amqpConn.then((conn) => {
       // create an amqp channel for the spark instance
       return conn.createChannel().then((ch) => {
-        openedCh = ch
-        // make sure the fanout exchagne for broadcast exists
-        let fanoutOk = ch.assertExchange(ekeyPrivate, 'topic', { durable: true })
+        // make sure the topic exchagne exists
+        let ok = ch.assertExchange(ekeyPrivate, 'topic', { durable: true })
         // publish message
-        return fanoutOk.then(() => {
+        ok = ok.then(() => {
           const pubOpts = { headers: { category: category } }
           const msgBuffer = Buffer.from(JSON.stringify(msg))
           return ch.publish(ekeyBroadcast, privateRoutingKey, msgBuffer, pubOpts)
         })
+        // release channel when done publishing
+        return ok.then(() => {
+          return ch.close()
+        })
       })
     })
 
-    let cleanupOk = openedCh ? openedCh.close() : Promise.resolve()
-    return Promise.all([amqpOk, cleanupOk]).then(
+    return amqpOk.then(
       () => {
         return { status: 'ok' }
       },
@@ -58,24 +60,25 @@ export default {
       })
   },
   broadcast: (category, msg) => {
-    let openedCh
     const amqpOk = amqpConn.then((conn) => {
       // create an amqp channel for the spark instance
       return conn.createChannel().then((ch) => {
-        openedCh = ch
-        // make sure the fanout exchagne for broadcast exists
-        let fanoutOk = ch.assertExchange(ekeyBroadcast, 'fanout', { durable: true })
+        // make sure the fanout exchagne exists
+        let ok = ch.assertExchange(ekeyBroadcast, 'fanout', { durable: true })
         // publish message
-        return fanoutOk.then(() => {
+        ok = ok.then(() => {
           const pubOpts = { headers: { category: category } }
           const msgBuffer = Buffer.from(JSON.stringify(msg))
           return ch.publish(ekeyBroadcast, '', msgBuffer, pubOpts)
         })
+        // release channel when done publishing
+        return ok.then(() => {
+          return ch.close()
+        })
       })
     })
 
-    let cleanupOk = openedCh ? openedCh.close() : Promise.resolve()
-    return Promise.all([amqpOk, cleanupOk]).then(
+    return amqpOk.then(
       () => {
         return { status: 'ok' }
       },
