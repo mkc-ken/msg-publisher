@@ -33,10 +33,14 @@ export default (opts) => {
         }
 
         let ok
-        if(user_id)
+        if(user_id) {
+          log.debug(`sending ${category} message to ${user_id}`)
           ok = impl.send(user_id, category, msg)
-        else
+        }
+        else {
+          log.debug(`broadcasting ${category} message`)
           ok = impl.broadcast(category, msg)
+        }
 
         ok.then(
           (receipt) => {

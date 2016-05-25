@@ -41,7 +41,7 @@ export default {
         ok = ok.then(() => {
           const pubOpts = { headers: { category: category } }
           const msgBuffer = Buffer.from(JSON.stringify(msg))
-          return ch.publish(ekeyBroadcast, privateRoutingKey, msgBuffer, pubOpts)
+          return ch.publish(ekeyPrivate, privateRoutingKey, msgBuffer, pubOpts)
         })
         // release channel when done publishing
         return ok.then(() => {
