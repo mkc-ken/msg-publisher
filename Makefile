@@ -22,6 +22,7 @@ all:
 clean:
 	docker images | grep "$(PROJECT)" | grep "$(TAG)" | awk '{print $$3}' | (read id; if [ "$$id" != "" ]; then docker rmi $$id; exit 0; fi)
 build: Dockerfile clean
+	nsp check
 	npm run compile
 	docker build -t $(IMAGE) .
 registry: build
