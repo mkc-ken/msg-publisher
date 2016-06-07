@@ -32,10 +32,10 @@ registry: build
 	docker rmi -f $(PRIVATE_IMAGE)
 up:
 	npm run compile
-	node ./lib/index.js
+	node ./lib/index.js | bunyan
 up_prof:
 	npm run compile
-	node --prof ./lib/index.js
+	node --prof ./lib/index.js | bunyan
 profile:
 	rm profile.txt || true
 	node --prof-process isolate*-v8.log > profile.txt
