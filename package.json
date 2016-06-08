@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "amqplib": "^0.4.1",
+    "blocked": "^1.2.1",
     "body-parser": "^1.14.2",
     "bunyan": "^1.5.1",
     "express": "^4.13.3",

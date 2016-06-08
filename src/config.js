@@ -11,19 +11,21 @@ function isDebug() {
   return false
 }
 
+let _local_vm_ip
 function get_local_vm_ip() {
-  if (env === 'development') {
-    const cmd = 'docker-machine ip local'
-    return execSync(cmd).toString().trim()
+  if (!_local_vm_ip && env === 'development') {
+    try {
+      const cmd = 'docker-machine ip local'
+      _local_vm_ip = execSync(cmd).toString().trim()
+    } catch (err) {}
   }
-  return
+  return _local_vm_ip
 }
 
 const env = process.env.NODE_ENV || 'development'
 const debug = isDebug()
-const local_vm_ip = get_local_vm_ip()
 const port = process.env.PORT || 7070
-const rabbit_ip = process.env.RABBIT_IP || local_vm_ip
+const rabbit_ip = process.env.RABBIT_IP || get_local_vm_ip()
 
 export default {
   env: env,
