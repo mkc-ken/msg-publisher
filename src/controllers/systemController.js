@@ -12,7 +12,7 @@ const deliverer = deliverer_factory({ impl: amqp_deliverer })
 
 export default {
   init: (router) => {
-    router.post('/systems', (async (req, res) => {
+    router.post('/systems', wrapper(async (req, res) => {
       log.debug({ messageBody: req.body }, 'new system message delivery requested')
 
       const receipt = await deliverer.queue(CATEGORIES.SYSTEM, req.body)

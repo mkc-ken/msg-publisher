@@ -12,7 +12,7 @@ const deliverer = deliverer_factory({ impl: amqp_deliverer })
 
 export default {
   init: (router) => {
-    router.post('/comments', (async (req, res) => {
+    router.post('/comments', wrapper(async (req, res) => {
       log.debug({ messageBody: req.body }, 'new comment message delivery requested')
 
       const receipt = await deliverer.queue(CATEGORIES.COMMENT, req.body)
