@@ -26,7 +26,7 @@ const env = process.env.NODE_ENV || 'development'
 const debug = isDebug()
 const port = process.env.PORT || 7070
 
-const rabbit_ip = process.env.RABBIT_IP || get_local_vm_ip()
+const rabbit_host = process.env.RABBIT_HOST || get_local_vm_ip()
 const rabbit_port = process.env.RABBIT_PORT || 5672
 const rabbit_uri = process.env.RABBIT_PASS || undefined
 
