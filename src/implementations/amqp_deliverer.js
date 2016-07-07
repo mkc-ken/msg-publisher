@@ -5,7 +5,10 @@ import config from '../config'
 import logger from '../utils/logger'
 
 const log = logger.child({module: 'amqp_deliverer'})
-const amqpConn = amqplib.connect('amqp://' + config.storage.rabbit.host + ':' + config.storage.rabbit.port)
+
+const rabbitConfig = config.storage.rabbit
+const amqpConnUri = rabbitConfig.uri ? rabbitConfig.uri : `amqp://${rabbitConfig.host}:${rabbitConfig.port}`
+const amqpConn = amqplib.connect(amqpConnUri)
 const namespace = (config.amqp_namespace || 'mkm') + '.'
 // prepare exchange keys
 const ekeyBroadcast = namespace + 'ibc.broadcast'
